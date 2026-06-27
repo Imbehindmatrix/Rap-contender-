@@ -1,160 +1,349 @@
+/* =========================================================
+   1. VARIABLES & POLICES
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;500;600;700&display=swap');
+
 :root {
+    /* Palette de Couleurs Principales */
     --bg-blue: #1a56db;
-    --card-white: #ffffff;
-    --btn-yellow: #facc15;
-    --btn-yellow-hover: #eab308;
-    --btn-blue: #3b82f6;
-    --btn-blue-hover: #2563eb;
-    --text-dark: #1e293b;
-    --lyrics-bg: #0f172a; /* Fond sombre style Amazon Music */
+    --bg-blue-dark: #1240a8;
+    --white: #ffffff;
+    --gray-light: #f8fafc;
+    --gray-border: #cbd5e1;
+    
+    /* Couleurs Scène (Amazon Music Style) */
+    --stage-bg: #0f172a;
+    --stage-panel: #1e293b;
     --lyrics-inactive: #64748b;
     --lyrics-active: #ffffff;
+
+    /* Boutons et Accents */
+    --primary: #facc15; /* Jaune Gartic */
+    --primary-shadow: #ca8a04;
+    --secondary: #3b82f6; /* Bleu */
+    --secondary-shadow: #1d4ed8;
+    --ai-accent: #a855f7; /* Violet IA */
+    --ai-shadow: #7e22ce;
+    --danger: #ef4444; /* Rouge (Interdits/Erreurs) */
+
+    /* Textes */
+    --text-dark: #0f172a;
+    --font-title: 'Fredoka One', cursive;
+    --font-main: 'Poppins', sans-serif;
 }
 
+/* =========================================================
+   2. RESET & FOND (GARTIC STYLE)
+   ========================================================= */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: var(--bg-blue);
+    font-family: var(--font-main);
+    color: var(--text-dark);
     height: 100vh;
-    display: flex;
+    overflow: hidden; /* Empêche le scroll global, tout se passe dans les vues */
+    background-color: var(--bg-blue);
+    
+    /* Motif à pois style Gartic */
+    background-image: 
+        radial-gradient(var(--bg-blue-dark) 15%, transparent 16%),
+        radial-gradient(var(--bg-blue-dark) 15%, transparent 16%);
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
+}
+
+/* =========================================================
+   3. LOGIQUE SPA (SINGLE PAGE APPLICATION)
+   ========================================================= */
+.screen-view {
+    display: none; /* Caché par défaut */
+    width: 100%;
+    height: 100%;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
 }
 
-/* Utilitaires pour basculer les écrans */
-.screen { display: none; width: 100%; height: 100%; }
-.screen.active { display: flex; justify-content: center; align-items: center; }
-.hidden { display: none !important; }
-
-/* --- CARTES ET BOUTONS (Style Gartic) --- */
-.card {
-    background: var(--card-white);
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    border: 4px solid #1e40af;
-    text-align: center;
-}
-
-.logo {
-    font-size: 2.5rem;
-    color: var(--bg-blue);
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    font-weight: 900;
-    text-shadow: 2px 2px 0px var(--btn-yellow);
-}
-
-.btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-    transition: transform 0.1s;
-}
-.btn:active { transform: translateY(4px); box-shadow: none; }
-.btn-yellow { background: var(--btn-yellow); color: #000; }
-.btn-yellow:hover { background: var(--btn-yellow-hover); }
-.btn-blue { background: var(--btn-blue); color: #fff; }
-.btn-blue:hover { background: var(--btn-blue-hover); }
-
-/* Accueil */
-.home-layout { display: flex; justify-content: center; gap: 20px; }
-.input-group { margin: 20px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.input-group input { padding: 10px; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 1rem; }
-.action-buttons { display: flex; gap: 10px; justify-content: center; }
-
-/* Modale Règles */
-.modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 1000;
-}
-.rules-header { background: var(--btn-blue); color: white; padding: 10px; border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px; }
-.rules-meta { display: flex; justify-content: space-around; margin-bottom: 20px; font-size: 0.9rem; color: var(--btn-blue); }
-.rules-icon { font-size: 4rem; margin-bottom: 20px; }
-.card-rules p { margin-bottom: 20px; color: var(--text-dark); }
-
-/* --- ECRAN DE JEU --- */
-#screen-game.active {
+/* Affichage uniquement si la vue n'a pas la classe .hidden */
+.screen-view:not(.hidden) {
     display: flex;
-    width: 95vw;
-    height: 90vh;
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-/* Sidebar Joueurs */
-.sidebar-players { width: 250px; background: #f8fafc; border-right: 2px solid #e2e8f0; padding: 10px; overflow-y: auto; }
-.player { display: flex; align-items: center; padding: 10px; border-radius: 8px; margin-bottom: 5px; background: white; border: 1px solid #e2e8f0; }
-.player.active-turn { border: 2px solid var(--btn-yellow); background: #fefce8; }
-.player .avatar { font-size: 2rem; margin-right: 10px; background: #e2e8f0; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-.player-info { display: flex; flex-direction: column; text-align: left; }
-.player-name { font-weight: bold; color: var(--text-dark); font-size: 0.9rem; }
-.player-points { color: #64748b; font-size: 0.8rem; }
+.hidden {
+    display: none !important;
+}
 
-/* Zone Centrale (Paroles Amazon Music) */
-.main-stage { flex-grow: 1; display: flex; flex-direction: column; background: var(--lyrics-bg); position: relative; }
-.top-bar { padding: 10px 20px; background: rgba(0,0,0,0.3); color: white; text-align: center; font-weight: bold; }
-.timer-bar { height: 6px; background: #333; border-radius: 3px; margin-top: 10px; overflow: hidden; }
-.timer-fill { height: 100%; background: var(--btn-yellow); width: 100%; transition: width 1s linear; }
+/* =========================================================
+   4. COMPOSANTS GLOBAUX (CARTES, BOUTONS, INPUTS)
+   ========================================================= */
+.card-container {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    border: 4px solid var(--text-dark);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+}
 
-.lyrics-container {
+.large-card {
+    max-width: 800px;
+}
+
+.main-title {
+    font-family: var(--font-title);
+    font-size: 3rem;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0 var(--primary);
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-weight: 600;
+    color: var(--secondary);
+    margin-bottom: 30px;
+}
+
+/* Typographie des boutons */
+.btn {
+    font-family: var(--font-title);
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: 3px solid var(--text-dark);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+}
+
+.btn:active {
+    transform: translateY(4px);
+    box-shadow: none !important;
+}
+
+.btn-primary { background: var(--primary); color: var(--text-dark); box-shadow: 0 6px 0 var(--primary-shadow); }
+.btn-secondary { background: var(--secondary); color: var(--white); box-shadow: 0 6px 0 var(--secondary-shadow); }
+.btn-ai { background: var(--ai-accent); color: var(--white); box-shadow: 0 6px 0 var(--ai-shadow); width: 100%; margin-top: 15px;}
+.btn-small { padding: 8px 15px; font-size: 0.9rem; box-shadow: 0 4px 0 var(--text-dark); }
+.btn-large { width: 100%; padding: 15px; font-size: 1.3rem; margin-top: 20px; }
+
+.btn:disabled {
+    filter: grayscale(100%);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Inputs globaux */
+input[type="text"], input[type="number"], select {
+    font-family: var(--font-main);
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 3px solid var(--gray-border);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+input[type="text"]:focus, select:focus {
+    border-color: var(--secondary);
+}
+
+/* =========================================================
+   5. VUES ACCUEIL & SALONS
+   ========================================================= */
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.action-row {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Liste des salons */
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 3px solid var(--gray-border); padding-bottom: 10px; }
+.btn-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+.rooms-list { max-height: 400px; overflow-y: auto; text-align: left; margin-bottom: 20px; }
+.room-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 2px solid var(--gray-border); border-radius: 12px; margin-bottom: 10px; background: var(--gray-light); }
+.room-info h3 { font-size: 1.2rem; color: var(--text-dark); margin-bottom: 4px; }
+.room-info p { font-size: 0.9rem; color: var(--lyrics-inactive); }
+
+/* =========================================================
+   6. VUE LOBBY (CONFIGURATION)
+   ========================================================= */
+.lobby-layout {
+    display: flex;
+    width: 90vw;
+    max-width: 1200px;
+    height: 85vh;
+    background: var(--white);
+    border-radius: 24px;
+    border: 4px solid var(--text-dark);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+
+.lobby-settings {
+    width: 350px;
+    background: var(--gray-light);
+    padding: 25px;
+    border-right: 3px solid var(--gray-border);
+    overflow-y: auto;
+}
+
+.setting-group { margin-bottom: 20px; }
+.setting-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; }
+.constraints-group label { display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer; margin-bottom: 5px;}
+
+.theme-preview {
+    margin-top: 15px;
+    padding: 15px;
+    background: var(--stage-panel);
+    color: var(--primary);
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid var(--text-dark);
+}
+
+.lobby-players {
+    flex-grow: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.roles-container { display: flex; gap: 30px; flex-grow: 1; margin-top: 20px; }
+.role-section { flex: 1; background: var(--gray-light); border: 2px solid var(--gray-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; }
+.role-section h3 { margin-bottom: 15px; font-family: var(--font-title); color: var(--secondary); text-align: center; }
+.slot-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.btn-join-role { padding: 15px; border: 2px dashed var(--text-dark); border-radius: 10px; background: transparent; cursor: pointer; font-weight: bold; color: var(--text-dark); transition: background 0.2s; }
+.btn-join-role:hover { background: #e2e8f0; }
+
+.player-tag { background: var(--white); border: 2px solid var(--text-dark); padding: 12px; border-radius: 10px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+
+/* =========================================================
+   7. VUE JEU (LA ROOM / L'ARÈNE)
+   ========================================================= */
+.game-layout {
+    display: flex;
+    width: 98vw;
+    height: 96vh;
+    background: var(--stage-bg);
+    border-radius: 20px;
+    border: 4px solid var(--text-dark);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+/* Sidebars (Gauche: Joueurs / Droite: Chat) */
+.game-sidebar { width: 280px; background: var(--white); display: flex; flex-direction: column; }
+.sidebar-left { border-right: 4px solid var(--text-dark); }
+.sidebar-right { border-left: 4px solid var(--text-dark); }
+.sidebar-header { background: var(--text-dark); color: var(--white); text-align: center; padding: 15px; font-family: var(--font-title); font-size: 1.2rem; text-transform: uppercase; }
+
+.in-game-rappers, .in-game-spectators { padding: 15px; border-bottom: 2px solid var(--gray-border); }
+.in-game-rappers h4, .in-game-spectators h4 { color: var(--secondary); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+.player-card { background: var(--gray-light); padding: 10px; border-radius: 8px; border: 2px solid var(--gray-border); margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+
+/* Chat Multijoueur */
+.chat-messages { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; }
+.sys-msg { background: #e0e7ff; color: var(--secondary); padding: 8px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 0.8rem; }
+.chat-input-area { display: flex; padding: 10px; background: var(--gray-light); border-top: 2px solid var(--gray-border); gap: 5px; }
+.chat-input-area input { border: 2px solid var(--gray-border); border-radius: 8px; padding: 8px; flex-grow: 1; outline: none; }
+.btn-icon { background: var(--white); border: 2px solid var(--gray-border); border-radius: 8px; width: 40px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background 0.2s; }
+.btn-icon:hover { background: #e2e8f0; }
+
+/* ---------------------------------------------------------
+   SCÈNE CENTRALE (AMAZON MUSIC STYLE)
+   --------------------------------------------------------- */
+.game-stage {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    position: relative;
+}
+
+/* Header de la scène (Thème, Chrono) */
+.stage-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(0,0,0,0.3); color: var(--white); border-bottom: 2px solid rgba(255,255,255,0.1); }
+.ai-theme-board { display: flex; align-items: center; gap: 10px; }
+.ai-icon { background: var(--ai-accent); padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+.ai-theme-board h2 { font-size: 1.2rem; font-weight: 600; }
+.turn-announcer { font-family: var(--font-title); font-size: 1.5rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+.timer-box { font-family: var(--font-title); font-size: 2rem; color: var(--danger); background: var(--white); padding: 5px 15px; border-radius: 12px; border: 3px solid var(--danger); }
+
+/* Jauge de Score (Tir à la Corde) */
+.score-bar-container { width: 100%; height: 12px; background: var(--stage-panel); display: flex; position: relative; }
+.score-fill { height: 100%; transition: width 0.5s ease-out; }
+.rapper-1-score { background: var(--secondary); width: 50%; }
+.rapper-2-score { background: var(--primary); width: 50%; }
+.score-marker { position: absolute; left: 50%; top: -4px; height: 20px; width: 4px; background: var(--white); transform: translateX(-50%); box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+
+/* Affichage des Lyrics */
+.lyrics-board {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Pousse les anciennes punchlines vers le haut */
     align-items: center;
-    padding: 40px;
-    overflow-y: auto;
-    gap: 15px;
+    padding: 50px;
+    gap: 20px;
+    overflow: hidden;
 }
+
 .lyric-line {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: var(--lyrics-inactive);
-    transition: all 0.3s ease;
+    font-weight: 600;
     text-align: center;
-    opacity: 0.5;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0.4;
+    max-width: 85%;
+    line-height: 1.4;
 }
+
+/* La punchline actuellement jouée */
 .lyric-line.active {
-    font-size: 2.2rem;
+    font-size: 2.8rem;
     color: var(--lyrics-active);
-    font-weight: bold;
     opacity: 1;
-    text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
     transform: scale(1.05);
 }
 
-.input-area {
-    padding: 15px;
-    background: #1e293b;
-    display: flex;
-    gap: 10px;
-}
-.input-area input {
-    flex-grow: 1;
-    padding: 15px;
-    border-radius: 8px;
-    border: none;
-    font-size: 1.1rem;
-}
+/* Espace d'Action du bas (Saisie ou Vote) */
+.action-board { background: var(--stage-panel); padding: 20px 30px; border-top: 2px solid rgba(255,255,255,0.1); }
+.role-interface { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
 
-/* Sidebar Chat (Journaux) */
-.sidebar-chat { width: 250px; background: #f8fafc; border-left: 2px solid #e2e8f0; display: flex; flex-direction: column; }
-.chat-logs { flex-grow: 1; padding: 10px; overflow-y: auto; font-size: 0.85rem; }
-.log { margin-bottom: 8px; padding: 5px; border-radius: 4px; }
-.log.info { color: #2563eb; background: #eff6ff; }
-.chat-input-area { padding: 10px; background: white; border-top: 1px solid #e2e8f0; }
-.chat-input-area input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; }
+/* Input Rappeur */
+.input-wrapper { display: flex; width: 100%; max-width: 800px; gap: 15px; }
+.input-wrapper input { padding: 18px; font-size: 1.2rem; border-radius: 12px; border: none; background: rgba(255,255,255,0.9); flex-grow: 1; font-family: var(--font-main); font-weight: 500; }
+.input-wrapper input:focus { background: var(--white); outline: 3px solid var(--primary); }
+.warning-box { color: var(--white); background: var(--danger); padding: 10px 20px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; animation: shake 0.3s ease-in-out; }
+
+/* Boutons Public (Vote) */
+.vote-prompt { color: var(--white); font-weight: 600; margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+.vote-buttons { display: flex; gap: 20px; width: 100%; max-width: 600px; }
+.btn-vote { flex: 1; padding: 20px; font-size: 1.2rem; color: var(--white); border: 3px solid rgba(255,255,255,0.2); }
+.btn-vote:hover { border-color: var(--white); }
+.vote-r1 { background: var(--secondary); box-shadow: 0 6px 0 var(--secondary-shadow); }
+.vote-r2 { background: #ca8a04; box-shadow: 0 6px 0 #a16207; } /* Ton jaune un peu plus sombre pour contraster avec le bleu */
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
