@@ -1,0 +1,160 @@
+:root {
+    --bg-blue: #1a56db;
+    --card-white: #ffffff;
+    --btn-yellow: #facc15;
+    --btn-yellow-hover: #eab308;
+    --btn-blue: #3b82f6;
+    --btn-blue-hover: #2563eb;
+    --text-dark: #1e293b;
+    --lyrics-bg: #0f172a; /* Fond sombre style Amazon Music */
+    --lyrics-inactive: #64748b;
+    --lyrics-active: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-blue);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Utilitaires pour basculer les écrans */
+.screen { display: none; width: 100%; height: 100%; }
+.screen.active { display: flex; justify-content: center; align-items: center; }
+.hidden { display: none !important; }
+
+/* --- CARTES ET BOUTONS (Style Gartic) --- */
+.card {
+    background: var(--card-white);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    border: 4px solid #1e40af;
+    text-align: center;
+}
+
+.logo {
+    font-size: 2.5rem;
+    color: var(--bg-blue);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-weight: 900;
+    text-shadow: 2px 2px 0px var(--btn-yellow);
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+}
+.btn:active { transform: translateY(4px); box-shadow: none; }
+.btn-yellow { background: var(--btn-yellow); color: #000; }
+.btn-yellow:hover { background: var(--btn-yellow-hover); }
+.btn-blue { background: var(--btn-blue); color: #fff; }
+.btn-blue:hover { background: var(--btn-blue-hover); }
+
+/* Accueil */
+.home-layout { display: flex; justify-content: center; gap: 20px; }
+.input-group { margin: 20px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.input-group input { padding: 10px; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 1rem; }
+.action-buttons { display: flex; gap: 10px; justify-content: center; }
+
+/* Modale Règles */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+.rules-header { background: var(--btn-blue); color: white; padding: 10px; border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px; }
+.rules-meta { display: flex; justify-content: space-around; margin-bottom: 20px; font-size: 0.9rem; color: var(--btn-blue); }
+.rules-icon { font-size: 4rem; margin-bottom: 20px; }
+.card-rules p { margin-bottom: 20px; color: var(--text-dark); }
+
+/* --- ECRAN DE JEU --- */
+#screen-game.active {
+    display: flex;
+    width: 95vw;
+    height: 90vh;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Sidebar Joueurs */
+.sidebar-players { width: 250px; background: #f8fafc; border-right: 2px solid #e2e8f0; padding: 10px; overflow-y: auto; }
+.player { display: flex; align-items: center; padding: 10px; border-radius: 8px; margin-bottom: 5px; background: white; border: 1px solid #e2e8f0; }
+.player.active-turn { border: 2px solid var(--btn-yellow); background: #fefce8; }
+.player .avatar { font-size: 2rem; margin-right: 10px; background: #e2e8f0; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.player-info { display: flex; flex-direction: column; text-align: left; }
+.player-name { font-weight: bold; color: var(--text-dark); font-size: 0.9rem; }
+.player-points { color: #64748b; font-size: 0.8rem; }
+
+/* Zone Centrale (Paroles Amazon Music) */
+.main-stage { flex-grow: 1; display: flex; flex-direction: column; background: var(--lyrics-bg); position: relative; }
+.top-bar { padding: 10px 20px; background: rgba(0,0,0,0.3); color: white; text-align: center; font-weight: bold; }
+.timer-bar { height: 6px; background: #333; border-radius: 3px; margin-top: 10px; overflow: hidden; }
+.timer-fill { height: 100%; background: var(--btn-yellow); width: 100%; transition: width 1s linear; }
+
+.lyrics-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    overflow-y: auto;
+    gap: 15px;
+}
+.lyric-line {
+    font-size: 1.5rem;
+    color: var(--lyrics-inactive);
+    transition: all 0.3s ease;
+    text-align: center;
+    opacity: 0.5;
+}
+.lyric-line.active {
+    font-size: 2.2rem;
+    color: var(--lyrics-active);
+    font-weight: bold;
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    transform: scale(1.05);
+}
+
+.input-area {
+    padding: 15px;
+    background: #1e293b;
+    display: flex;
+    gap: 10px;
+}
+.input-area input {
+    flex-grow: 1;
+    padding: 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1rem;
+}
+
+/* Sidebar Chat (Journaux) */
+.sidebar-chat { width: 250px; background: #f8fafc; border-left: 2px solid #e2e8f0; display: flex; flex-direction: column; }
+.chat-logs { flex-grow: 1; padding: 10px; overflow-y: auto; font-size: 0.85rem; }
+.log { margin-bottom: 8px; padding: 5px; border-radius: 4px; }
+.log.info { color: #2563eb; background: #eff6ff; }
+.chat-input-area { padding: 10px; background: white; border-top: 1px solid #e2e8f0; }
+.chat-input-area input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; }
